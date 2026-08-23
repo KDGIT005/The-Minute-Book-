@@ -22,17 +22,17 @@ An executive-grade AI meeting summarizer and transcription suite. Upload recorde
 
 ---
 
-## ☁️ Live Cloud Infrastructure & Deployment
+## ☁️ Cloud Architecture & Deployment
 
-This project is deployed on a modern, decoupled cloud infrastructure:
+This project is deployed across a modern, decoupled cloud infrastructure:
 
-| Component | Cloud Platform | Technology | Live URL / Details |
-|:---|:---|:---|:---|
-| **Frontend UI** | **Cloudflare Workers / Pages** | React 18 + Vite + TypeScript + Tailwind CSS | [the-minute-book.kuldeepdhangad6.workers.dev](https://the-minute-book.kuldeepdhangad6.workers.dev/) |
-| **Backend API** | **Render.com** | Java 21 + Spring Boot 3.3 REST API (Dockerized) | `https://minute-book-backend.onrender.com` |
-| **Database** | **TiDB Cloud Serverless** | Managed Cloud MySQL 8.0 + Flyway Schema Migrations | `gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000` |
-| **ASR (Speech-to-Text)** | **Groq Cloud API** | `whisper-large-v3-turbo` (Near Real-Time Transcription) | Sub-second audio ingestion with word timestamps |
-| **LLM Summarization** | **Google AI Studio** | `gemini-2.5-flash` (4-Stage Map-Reduce Pipeline) | Multi-paragraph overview, action items & decisions |
+| Component | Cloud Platform | Architecture & Technology |
+|:---|:---|:---|
+| **Frontend UI** | **Cloudflare Workers / Pages** | React 18 + Vite + TypeScript + Tailwind CSS (Edge Global CDN) |
+| **Backend API** | **Render.com** | Java 21 + Spring Boot 3.3 REST API (Containerized Async Service) |
+| **Database** | **TiDB Cloud Serverless** | Managed Cloud MySQL 8.0 with automated Flyway Schema Migrations |
+| **ASR (Speech-to-Text)** | **Groq Cloud** | `whisper-large-v3-turbo` with sub-second audio transcription & word timestamps |
+| **LLM Engine** | **Google AI Studio** | `gemini-2.5-flash` with 4-Stage Map-Reduce prompt chain |
 
 ---
 
