@@ -2,7 +2,7 @@ import type { MeetingListItem, MeetingDetail, StatusResponse, ActionItem } from 
 
 const API_BASE = import.meta.env.VITE_API_URL
   ? import.meta.env.VITE_API_URL.replace(/\/+$/, '')
-  : '';
+  : (import.meta.env.PROD ? 'https://minute-book-backend.onrender.com' : '');
 const BASE_URL = `${API_BASE}/api/meetings`;
 
 async function handleResponse<T>(response: Response): Promise<T> {
