@@ -1,6 +1,9 @@
 import type { MeetingListItem, MeetingDetail, StatusResponse, ActionItem } from '../types/meeting';
 
-const BASE_URL = '/api/meetings';
+const API_BASE = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL.replace(/\/+$/, '')
+  : '';
+const BASE_URL = `${API_BASE}/api/meetings`;
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
