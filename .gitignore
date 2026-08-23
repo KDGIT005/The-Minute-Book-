@@ -1,0 +1,50 @@
+# Environment & Sensitive Keys
+.env
+.env.local
+.env.*.local
+*.env
+.env*
+!.env.example
+
+# Dependencies & Build Artifacts
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+target/
+backend/target/
+*.jar
+*.war
+*.class
+*.tsbuildinfo
+
+# Application & Upload Data
+data/
+backend/data/
+/data/audio/*
+!data/audio/.gitkeep
+backend/data/audio/*
+!backend/data/audio/.gitkeep
+
+# IDE & Editor files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+*.swp
+*.swo
+.project
+.classpath
+.settings/
+
+# OS & Logs
+.DS_Store
+Thumbs.db
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
