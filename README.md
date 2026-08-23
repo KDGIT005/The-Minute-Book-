@@ -111,8 +111,8 @@ Rather than relying on a single naive prompt, The Minute Book runs a structured 
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/minute-book.git
-cd minute-book
+git clone https://github.com/KDGIT005/The-Minute-Book-.git
+cd The-Minute-Book-
 
 # Create local environment configuration
 cp .env.example .env
@@ -196,7 +196,7 @@ Access the application at `http://localhost:3000`.
 ## 📂 Project Structure
 
 ```
-minute-book/
+The-Minute-Book-/
 ├── backend/                             # Spring Boot 3.3 Backend
 │   ├── src/main/java/com/minutebook/
 │   │   ├── config/                      # WebConfig (CORS), RestClient, Async
@@ -227,11 +227,11 @@ minute-book/
 ## 👨‍💻 Author
 
 **Kuldeep Dhangad**  
-- GitHub: [@your-username](https://github.com/your-username)
-- LinkedIn: [Connect on LinkedIn](https://linkedin.com/in/your-profile)
+- GitHub: [@KDGIT005](https://github.com/KDGIT005)
 
 ---
 
 ## 📄 License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
