@@ -5,7 +5,7 @@
 
 An executive-grade AI meeting summarizer and transcription suite. Upload recorded conversations and transform unstructured audio into timestamped transcripts, definitive decisions, and actionable task checklists.
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20App-2F6E52?style=for-the-badge&logo=vercel&logoColor=white)](https://your-live-link-here.com)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-the--minute--book.workers.dev-2F6E52?style=for-the-badge&logo=cloudflare&logoColor=white)](https://the-minute-book.kuldeepdhangad6.workers.dev/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -16,10 +16,23 @@ An executive-grade AI meeting summarizer and transcription suite. Upload recorde
 
 ---
 
-### 🌐 [**🚀 Live Demo Link**](https://your-live-link-here.com)
-*(Replace `https://your-live-link-here.com` with your deployed URL when ready)*
+### 🌐 [**🚀 Live Application: https://the-minute-book.kuldeepdhangad6.workers.dev/**](https://the-minute-book.kuldeepdhangad6.workers.dev/)
 
 </div>
+
+---
+
+## ☁️ Live Cloud Infrastructure & Deployment
+
+This project is deployed on a modern, decoupled cloud infrastructure:
+
+| Component | Cloud Platform | Technology | Live URL / Details |
+|:---|:---|:---|:---|
+| **Frontend UI** | **Cloudflare Workers / Pages** | React 18 + Vite + TypeScript + Tailwind CSS | [the-minute-book.kuldeepdhangad6.workers.dev](https://the-minute-book.kuldeepdhangad6.workers.dev/) |
+| **Backend API** | **Render.com** | Java 21 + Spring Boot 3.3 REST API (Dockerized) | `https://minute-book-backend.onrender.com` |
+| **Database** | **TiDB Cloud Serverless** | Managed Cloud MySQL 8.0 + Flyway Schema Migrations | `gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000` |
+| **ASR (Speech-to-Text)** | **Groq Cloud API** | `whisper-large-v3-turbo` (Near Real-Time Transcription) | Sub-second audio ingestion with word timestamps |
+| **LLM Summarization** | **Google AI Studio** | `gemini-2.5-flash` (4-Stage Map-Reduce Pipeline) | Multi-paragraph overview, action items & decisions |
 
 ---
 
