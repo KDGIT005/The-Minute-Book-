@@ -25,12 +25,9 @@ An executive-grade AI meeting summarizer and transcription suite. Upload recorde
 
 <div align="center">
 
-<!-- Option A: Embedded Video (MP4 / WebM / GitHub Asset) -->
-<!-- Replace the URL below with your GitHub video URL or YouTube/Loom embed link -->
+https://github.com/KDGIT005/The-Minute-Book-/raw/main/assets/demo.mp4
 
-https://github.com/user-attachments/assets/YOUR_VIDEO_ASSET_ID
-
-> 💡 *Upload your `.mp4` / `.webm` recording by dragging & dropping it directly into the GitHub README editor, or link your Loom / YouTube demo video above.*
+<sub>*Watch The Minute Book in action — audio ingestion, Groq Whisper transcription, and executive ledger synthesis.*</sub>
 
 </div>
 
