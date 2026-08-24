@@ -9,10 +9,11 @@ import org.springframework.web.client.RestClient;
 public class RestClientConfig {
 
     @Bean("groqRestClient")
-    public RestClient groqRestClient(@Value("${app.groq.api-key}") String apiKey) {
+    public RestClient groqRestClient(@Value("${app.groq.api-key:}") String apiKey) {
         return RestClient.builder()
                 .baseUrl("https://api.groq.com/openai/v1")
                 .defaultHeader("Authorization", "Bearer " + apiKey)
+                .defaultHeader("Content-Type", "application/json")
                 .build();
     }
 

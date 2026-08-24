@@ -36,23 +36,32 @@ public class SummarizationService {
     private static final int CHUNK_SIZE_CHARS = 12000;  // ~3000 tokens at ~4 chars/token
     private static final int OVERLAP_CHARS = 800;       // ~200 tokens overlap
 
+    private final RestClient groqRestClient;
     private final RestClient openaiRestClient;
     private final RestClient geminiRestClient;
     private final ObjectMapper objectMapper;
+    private final String groqApiKey;
+    private final String groqLlmModel;
     private final String openaiApiKey;
     private final String openaiModel;
     private final String geminiApiKey;
 
     public SummarizationService(
+            @Qualifier("groqRestClient") RestClient groqRestClient,
             @Qualifier("openaiRestClient") RestClient openaiRestClient,
             @Qualifier("geminiRestClient") RestClient geminiRestClient,
             ObjectMapper objectMapper,
+            @Value("${app.groq.api-key:}") String groqApiKey,
+            @Value("${app.groq.llm-model:llama-3.3-70b-versatile}") String groqLlmModel,
             @Value("${app.openai.api-key:}") String openaiApiKey,
             @Value("${app.openai.model:gpt-4o-mini}") String openaiModel,
             @Value("${app.gemini.api-key:}") String geminiApiKey) {
+        this.groqRestClient = groqRestClient;
         this.openaiRestClient = openaiRestClient;
         this.geminiRestClient = geminiRestClient;
         this.objectMapper = objectMapper;
+        this.groqApiKey = groqApiKey;
+        this.groqLlmModel = groqLlmModel;
         this.openaiApiKey = openaiApiKey;
         this.openaiModel = openaiModel;
         this.geminiApiKey = geminiApiKey;
@@ -62,9 +71,13 @@ public class SummarizationService {
      * Run the full prompt chain. Returns a SummarizationResult with all extracted data.
      */
     public SummarizationResult summarize(List<TranscriptSegment> segments) {
-        log.info("Starting summarization pipeline for {} segments (LLM: {})",
-                segments.size(),
-                (openaiApiKey != null && !openaiApiKey.isBlank()) ? "OpenAI " + openaiModel : "Gemini");
+        String activeLlm = (groqApiKey != null && !groqApiKey.isBlank())
+                ? "Groq (" + groqLlmModel + ")"
+                : ((openaiApiKey != null && !openaiApiKey.isBlank())
+                    ? "OpenAI (" + openaiModel + ")"
+                    : "Gemini");
+
+        log.info("Starting summarization pipeline for {} segments (LLM: {})", segments.size(), activeLlm);
 
         // Build full transcript text with timestamps
         String fullTranscript = buildTimestampedTranscript(segments);
@@ -242,12 +255,14 @@ public class SummarizationService {
     // ── LLM Orchestration ─────────────────────────────────────────────────────
 
     private String callLlm(String systemPrompt, String userPrompt, boolean jsonMode) {
-        if (openaiApiKey != null && !openaiApiKey.isBlank()) {
+        if (groqApiKey != null && !groqApiKey.isBlank()) {
+            return callGroq(systemPrompt, userPrompt, jsonMode);
+        } else if (openaiApiKey != null && !openaiApiKey.isBlank()) {
             return callOpenAi(systemPrompt, userPrompt, jsonMode);
         } else if (geminiApiKey != null && !geminiApiKey.isBlank()) {
             return callGemini(systemPrompt, userPrompt, jsonMode);
         } else {
-            throw new IllegalStateException("Neither OPENAI_API_KEY nor GEMINI_API_KEY is configured.");
+            throw new IllegalStateException("GROQ_API_KEY is not configured. Please set your GROQ_API_KEY in .env");
         }
     }
 
@@ -255,12 +270,42 @@ public class SummarizationService {
         return callLlm(systemPrompt, userPrompt, true);
     }
 
+    // ── Groq LLM API calls ───────────────────────────────────────────────────
+
+    private String callGroq(String systemPrompt, String userPrompt, boolean jsonMode) {
+        return callChatCompletions(
+                groqRestClient,
+                (groqLlmModel != null && !groqLlmModel.isBlank()) ? groqLlmModel : "llama-3.3-70b-versatile",
+                systemPrompt,
+                userPrompt,
+                jsonMode,
+                "Groq"
+        );
+    }
+
     // ── OpenAI API calls ──────────────────────────────────────────────────────
 
     private String callOpenAi(String systemPrompt, String userPrompt, boolean jsonMode) {
+        return callChatCompletions(
+                openaiRestClient,
+                (openaiModel != null && !openaiModel.isBlank()) ? openaiModel : "gpt-4o-mini",
+                systemPrompt,
+                userPrompt,
+                jsonMode,
+                "OpenAI"
+        );
+    }
+
+    private String callChatCompletions(
+            RestClient client,
+            String model,
+            String systemPrompt,
+            String userPrompt,
+            boolean jsonMode,
+            String providerName) {
         try {
             ObjectNode requestBody = objectMapper.createObjectNode();
-            requestBody.put("model", (openaiModel != null && !openaiModel.isBlank()) ? openaiModel : "gpt-4o-mini");
+            requestBody.put("model", model);
             requestBody.put("temperature", 0.3);
 
             ArrayNode messages = objectMapper.createArrayNode();
@@ -283,21 +328,21 @@ public class SummarizationService {
                 requestBody.set("response_format", responseFormat);
             }
 
-            String response = openaiRestClient.post()
+            String response = client.post()
                     .uri("/chat/completions")
                     .body(requestBody)
                     .retrieve()
                     .body(String.class);
 
-            return extractOpenAiText(response);
+            return extractChatCompletionText(response);
 
         } catch (Exception e) {
-            log.error("OpenAI API call failed", e);
-            throw new RuntimeException("OpenAI API call failed: " + e.getMessage(), e);
+            log.error("{} API call failed", providerName, e);
+            throw new RuntimeException(providerName + " API call failed: " + e.getMessage(), e);
         }
     }
 
-    private String extractOpenAiText(String response) {
+    private String extractChatCompletionText(String response) {
         try {
             JsonNode root = objectMapper.readTree(response);
             JsonNode choices = root.get("choices");
@@ -307,10 +352,10 @@ public class SummarizationService {
                     return message.get("content").asText();
                 }
             }
-            log.warn("Unexpected OpenAI response structure: {}", response);
+            log.warn("Unexpected LLM response structure: {}", response);
             return "";
         } catch (Exception e) {
-            log.error("Failed to parse OpenAI response", e);
+            log.error("Failed to parse LLM response", e);
             return "";
         }
     }

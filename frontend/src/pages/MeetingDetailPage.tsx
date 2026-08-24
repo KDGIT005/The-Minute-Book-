@@ -170,7 +170,7 @@ export default function MeetingDetailPage() {
       {meeting.status === 'FAILED' && (
         <div className="mb-6 p-4 rounded-xl border border-red-200 bg-red-50 animate-fade-rise">
           <p className="font-body text-sm text-red-700">
-            Processing failed. Check your Groq and Gemini API keys in <code className="font-mono text-xs">.env</code> and try uploading again.
+            Processing failed. Check your Groq API key in <code className="font-mono text-xs">.env</code> and try uploading again.
           </p>
         </div>
       )}

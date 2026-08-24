@@ -28,7 +28,7 @@ const STEPS: NarrativeStep[] = [
     id: 'summarize',
     stepNumber: 3,
     title: 'Summarize',
-    description: 'Gemini reads the transcript in stages — chunk by chunk — and pulls out real decisions and action items, not a generic recap.',
+    description: "Groq's LLaMA 3.3 model analyzes the transcript in structured stages — pulling out real decisions and action items, not a generic recap.",
     tag: 'Structured AI distillation',
   },
   {

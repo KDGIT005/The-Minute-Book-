@@ -48,6 +48,8 @@ public class MinuteBookApplication {
                                 System.setProperty("spring.datasource.password", value);
                             } else if ("GROQ_API_KEY".equals(key)) {
                                 System.setProperty("app.groq.api-key", value);
+                            } else if ("OPENAI_API_KEY".equals(key)) {
+                                System.setProperty("app.openai.api-key", value);
                             } else if ("GEMINI_API_KEY".equals(key)) {
                                 System.setProperty("app.gemini.api-key", value);
                             }
