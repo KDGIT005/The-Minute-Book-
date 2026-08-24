@@ -31,6 +31,10 @@ app:
     api-key: ${GROQ_API_KEY:}
     api-url: https://api.groq.com/openai/v1/audio/transcriptions
     model: whisper-large-v3-turbo
+  openai:
+    api-key: ${OPENAI_API_KEY:}
+    api-url: https://api.openai.com/v1
+    model: ${OPENAI_MODEL:gpt-4o-mini}
   gemini:
     api-key: ${GEMINI_API_KEY:}
     api-url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent

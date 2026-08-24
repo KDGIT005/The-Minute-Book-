@@ -22,6 +22,21 @@ An executive-grade AI meeting summarizer and transcription suite. Upload recorde
 
 ---
 
+## 🎬 Video Demo & Walkthrough
+
+<div align="center">
+
+<!-- Option A: Embedded Video (MP4 / WebM / GitHub Asset) -->
+<!-- Replace the URL below with your GitHub video URL or YouTube/Loom embed link -->
+
+https://github.com/user-attachments/assets/YOUR_VIDEO_ASSET_ID
+
+> 💡 *Upload your `.mp4` / `.webm` recording by dragging & dropping it directly into the GitHub README editor, or link your Loom / YouTube demo video above.*
+
+</div>
+
+---
+
 ## ☁️ Cloud Architecture & Deployment
 
 This project is deployed across a modern, decoupled cloud infrastructure:

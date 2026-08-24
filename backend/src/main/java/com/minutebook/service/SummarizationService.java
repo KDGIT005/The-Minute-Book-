@@ -36,24 +36,35 @@ public class SummarizationService {
     private static final int CHUNK_SIZE_CHARS = 12000;  // ~3000 tokens at ~4 chars/token
     private static final int OVERLAP_CHARS = 800;       // ~200 tokens overlap
 
+    private final RestClient openaiRestClient;
     private final RestClient geminiRestClient;
     private final ObjectMapper objectMapper;
-    private final String apiKey;
+    private final String openaiApiKey;
+    private final String openaiModel;
+    private final String geminiApiKey;
 
     public SummarizationService(
+            @Qualifier("openaiRestClient") RestClient openaiRestClient,
             @Qualifier("geminiRestClient") RestClient geminiRestClient,
             ObjectMapper objectMapper,
-            @Value("${app.gemini.api-key}") String apiKey) {
+            @Value("${app.openai.api-key:}") String openaiApiKey,
+            @Value("${app.openai.model:gpt-4o-mini}") String openaiModel,
+            @Value("${app.gemini.api-key:}") String geminiApiKey) {
+        this.openaiRestClient = openaiRestClient;
         this.geminiRestClient = geminiRestClient;
         this.objectMapper = objectMapper;
-        this.apiKey = apiKey;
+        this.openaiApiKey = openaiApiKey;
+        this.openaiModel = openaiModel;
+        this.geminiApiKey = geminiApiKey;
     }
 
     /**
      * Run the full prompt chain. Returns a SummarizationResult with all extracted data.
      */
     public SummarizationResult summarize(List<TranscriptSegment> segments) {
-        log.info("Starting summarization pipeline for {} segments", segments.size());
+        log.info("Starting summarization pipeline for {} segments (LLM: {})",
+                segments.size(),
+                (openaiApiKey != null && !openaiApiKey.isBlank()) ? "OpenAI " + openaiModel : "Gemini");
 
         // Build full transcript text with timestamps
         String fullTranscript = buildTimestampedTranscript(segments);
@@ -104,7 +115,7 @@ public class SummarizationService {
                     "Transcript segment (chunk %d of %d):\n\n%s",
                     i + 1, chunks.size(), chunks.get(i));
 
-            String summary = callGemini(systemPrompt, userPrompt, false);
+            String summary = callLlm(systemPrompt, userPrompt, false);
             summaries.add(summary);
         }
 
@@ -136,7 +147,7 @@ public class SummarizationService {
 
         String userPrompt = "Meeting synthesis notes:\n\n" + combinedSummaries;
 
-        String jsonResponse = callGeminiJson(systemPrompt, userPrompt);
+        String jsonResponse = callLlmJson(systemPrompt, userPrompt);
         return parseExtractionResult(jsonResponse);
     }
 
@@ -202,7 +213,7 @@ public class SummarizationService {
                 Extracted action items:
                 %s""", combinedSummaries, decisionsJson, actionItemsJson);
 
-        return callGemini(systemPrompt, userPrompt, false);
+        return callLlm(systemPrompt, userPrompt, false);
     }
 
     // ── Stage D: Auto-Chapter Titling ─────────────────────────────────────────
@@ -224,8 +235,84 @@ public class SummarizationService {
 
         String userPrompt = sb.toString();
 
-        String jsonResponse = callGeminiJson(systemPrompt, userPrompt);
+        String jsonResponse = callLlmJson(systemPrompt, userPrompt);
         return parseChapterResult(jsonResponse);
+    }
+
+    // ── LLM Orchestration ─────────────────────────────────────────────────────
+
+    private String callLlm(String systemPrompt, String userPrompt, boolean jsonMode) {
+        if (openaiApiKey != null && !openaiApiKey.isBlank()) {
+            return callOpenAi(systemPrompt, userPrompt, jsonMode);
+        } else if (geminiApiKey != null && !geminiApiKey.isBlank()) {
+            return callGemini(systemPrompt, userPrompt, jsonMode);
+        } else {
+            throw new IllegalStateException("Neither OPENAI_API_KEY nor GEMINI_API_KEY is configured.");
+        }
+    }
+
+    private String callLlmJson(String systemPrompt, String userPrompt) {
+        return callLlm(systemPrompt, userPrompt, true);
+    }
+
+    // ── OpenAI API calls ──────────────────────────────────────────────────────
+
+    private String callOpenAi(String systemPrompt, String userPrompt, boolean jsonMode) {
+        try {
+            ObjectNode requestBody = objectMapper.createObjectNode();
+            requestBody.put("model", (openaiModel != null && !openaiModel.isBlank()) ? openaiModel : "gpt-4o-mini");
+            requestBody.put("temperature", 0.3);
+
+            ArrayNode messages = objectMapper.createArrayNode();
+
+            ObjectNode systemMsg = objectMapper.createObjectNode();
+            systemMsg.put("role", "system");
+            systemMsg.put("content", systemPrompt);
+            messages.add(systemMsg);
+
+            ObjectNode userMsg = objectMapper.createObjectNode();
+            userMsg.put("role", "user");
+            userMsg.put("content", userPrompt);
+            messages.add(userMsg);
+
+            requestBody.set("messages", messages);
+
+            if (jsonMode) {
+                ObjectNode responseFormat = objectMapper.createObjectNode();
+                responseFormat.put("type", "json_object");
+                requestBody.set("response_format", responseFormat);
+            }
+
+            String response = openaiRestClient.post()
+                    .uri("/chat/completions")
+                    .body(requestBody)
+                    .retrieve()
+                    .body(String.class);
+
+            return extractOpenAiText(response);
+
+        } catch (Exception e) {
+            log.error("OpenAI API call failed", e);
+            throw new RuntimeException("OpenAI API call failed: " + e.getMessage(), e);
+        }
+    }
+
+    private String extractOpenAiText(String response) {
+        try {
+            JsonNode root = objectMapper.readTree(response);
+            JsonNode choices = root.get("choices");
+            if (choices != null && choices.isArray() && !choices.isEmpty()) {
+                JsonNode message = choices.get(0).get("message");
+                if (message != null && message.has("content")) {
+                    return message.get("content").asText();
+                }
+            }
+            log.warn("Unexpected OpenAI response structure: {}", response);
+            return "";
+        } catch (Exception e) {
+            log.error("Failed to parse OpenAI response", e);
+            return "";
+        }
     }
 
     // ── Gemini API calls ──────────────────────────────────────────────────────
@@ -265,7 +352,7 @@ public class SummarizationService {
             requestBody.set("generationConfig", genConfig);
 
             String response = geminiRestClient.post()
-                    .uri("/models/gemini-2.5-flash:generateContent?key=" + apiKey)
+                    .uri("/models/gemini-2.5-flash:generateContent?key=" + geminiApiKey)
                     .body(requestBody)
                     .retrieve()
                     .body(String.class);
@@ -276,10 +363,6 @@ public class SummarizationService {
             log.error("Gemini API call failed", e);
             throw new RuntimeException("Gemini API call failed: " + e.getMessage(), e);
         }
-    }
-
-    private String callGeminiJson(String systemPrompt, String userPrompt) {
-        return callGemini(systemPrompt, userPrompt, true);
     }
 
     private String extractGeminiText(String response) {
