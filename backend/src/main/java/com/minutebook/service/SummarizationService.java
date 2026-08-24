@@ -52,7 +52,7 @@ public class SummarizationService {
             @Qualifier("geminiRestClient") RestClient geminiRestClient,
             ObjectMapper objectMapper,
             @Value("${app.groq.api-key:}") String groqApiKey,
-            @Value("${app.groq.llm-model:llama-3.3-70b-versatile}") String groqLlmModel,
+            @Value("${app.groq.llm-model:openai/gpt-oss-120b}") String groqLlmModel,
             @Value("${app.openai.api-key:}") String openaiApiKey,
             @Value("${app.openai.model:gpt-4o-mini}") String openaiModel,
             @Value("${app.gemini.api-key:}") String geminiApiKey) {
@@ -273,14 +273,18 @@ public class SummarizationService {
     // ── Groq LLM API calls ───────────────────────────────────────────────────
 
     private String callGroq(String systemPrompt, String userPrompt, boolean jsonMode) {
-        return callChatCompletions(
-                groqRestClient,
-                (groqLlmModel != null && !groqLlmModel.isBlank()) ? groqLlmModel : "llama-3.3-70b-versatile",
-                systemPrompt,
-                userPrompt,
-                jsonMode,
-                "Groq"
-        );
+        String primaryModel = (groqLlmModel != null && !groqLlmModel.isBlank()) ? groqLlmModel : "openai/gpt-oss-120b";
+        try {
+            return callChatCompletions(groqRestClient, primaryModel, systemPrompt, userPrompt, jsonMode, "Groq");
+        } catch (Exception e) {
+            log.warn("Groq call with {} failed, attempting fallback to openai/gpt-oss-20b: {}", primaryModel, e.getMessage());
+            try {
+                return callChatCompletions(groqRestClient, "openai/gpt-oss-20b", systemPrompt, userPrompt, jsonMode, "GroqFallback");
+            } catch (Exception fallbackEx) {
+                log.error("Groq fallback call also failed", fallbackEx);
+                throw e;
+            }
+        }
     }
 
     // ── OpenAI API calls ──────────────────────────────────────────────────────
