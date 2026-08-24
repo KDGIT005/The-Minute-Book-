@@ -243,8 +243,12 @@ public class SummarizationService {
                 Given timestamped summaries from an audio recording, group them into 3-6
                 coherent topical chapters. For each chapter, output a descriptive title (3-7 words)
                 and its start timestamp in seconds.
-                Output ONLY valid JSON:
-                [{ "title": "string", "start_timestamp": "string" }]""";
+                Output ONLY valid JSON matching this schema:
+                {
+                  "chapters": [
+                    { "title": "string", "start_timestamp": "string" }
+                  ]
+                }""";
 
         String userPrompt = sb.toString();
 
@@ -508,10 +512,11 @@ public class SummarizationService {
             JsonNode root = objectMapper.readTree(json);
             List<Chapter> chapters = new ArrayList<>();
 
-            if (root.isArray()) {
-                for (JsonNode cn : root) {
+            JsonNode chaptersNode = root.isArray() ? root : root.get("chapters");
+            if (chaptersNode != null && chaptersNode.isArray()) {
+                for (JsonNode cn : chaptersNode) {
                     Chapter ch = new Chapter();
-                    ch.setTitle(cn.get("title").asText());
+                    ch.setTitle(cn.has("title") ? cn.get("title").asText() : "Chapter");
                     if (cn.has("start_timestamp") && !cn.get("start_timestamp").isNull()) {
                         try {
                             ch.setStartTime(new BigDecimal(cn.get("start_timestamp").asText()));
