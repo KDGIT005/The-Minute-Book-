@@ -6,16 +6,18 @@
 An executive-grade AI meeting summarizer and transcription suite. Upload recorded conversations and transform unstructured audio into timestamped transcripts, definitive decisions, and actionable task checklists.
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-the--minute--book.workers.dev-2F6E52?style=for-the-badge&logo=cloudflare&logoColor=white)](https://the-minute-book.kuldeepdhangad6.workers.dev/)
+[![Watch Video Demo](https://img.shields.io/badge/🎬%20Video%20Demo-Watch%20Online-B8791E?style=for-the-badge&logo=google-drive&logoColor=white)](https://drive.google.com/file/d/1dz470BKs_b7VbA1bIskqcHPplwuPclOa/view?usp=sharing)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-v4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Groq AI Engine](https://img.shields.io/badge/Groq%20AI-Whisper%20+%20LLaMA%203.3-F55036?style=for-the-badge&logo=fastapi&logoColor=white)](https://groq.com/)
-[![License](https://img.shields.io/badge/License-MIT-B8791E?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-20262E?style=for-the-badge)](LICENSE)
 
 ---
 
 ### 🌐 [**🚀 Live Application: https://the-minute-book.kuldeepdhangad6.workers.dev/**](https://the-minute-book.kuldeepdhangad6.workers.dev/)
+### 🎬 [**▶️ Watch Full Video Walkthrough: Click Here to Watch on Google Drive**](https://drive.google.com/file/d/1dz470BKs_b7VbA1bIskqcHPplwuPclOa/view?usp=sharing)
 
 </div>
 
@@ -25,9 +27,11 @@ An executive-grade AI meeting summarizer and transcription suite. Upload recorde
 
 <div align="center">
 
-https://github.com/KDGIT005/The-Minute-Book-/raw/main/assets/demo.mp4
+[![Watch The Minute Book Video Demo](https://img.shields.io/badge/▶%20Click%20Here%20To%20Play%20Video%20Demo-The%20Minute%20Book%20Walkthrough-2F6E52?style=for-the-badge&logo=google-drive&logoColor=white)](https://drive.google.com/file/d/1dz470BKs_b7VbA1bIskqcHPplwuPclOa/view?usp=sharing)
 
-<sub>*Watch The Minute Book in action — audio ingestion, Groq Whisper transcription, and executive ledger synthesis.*</sub>
+<br/>
+
+> 🎥 **[Click here to watch the full HD video walkthrough on Google Drive](https://drive.google.com/file/d/1dz470BKs_b7VbA1bIskqcHPplwuPclOa/view?usp=sharing)** — *demonstrating audio ingestion, sub-second Groq Whisper transcription, and real-time executive ledger synthesis.*
 
 </div>
 
